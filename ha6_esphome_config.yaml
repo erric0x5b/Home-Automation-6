@@ -1,0 +1,124 @@
+esphome:
+  name: ha6
+  comment: "Modulo 6 IN e 6 OUT Wi-Fi"
+  project:
+    name: "ET_Design.home-automation6"
+    version: "1.0"
+  platform: ESP8266
+  board: esp01_1m
+  
+  includes:
+      - arduino_port_expander.h
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+  password: "9cda9a0a0f9e4b97f77d1f7b63795bf6"
+
+wifi:
+  ssid: !secret wifi-SSID
+  password: !secret wifi-password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Ha6 Fallback Hotspot"
+    password: "8LT17FgUoy8f"
+
+captive_portal:
+
+i2c:
+  id: i2c_component
+  sda: 2
+  scl: 0
+
+custom_component:
+  - id: ape
+    lambda: |-
+      auto ape_component = new ArduinoPortExpander(i2c_component, 0x08);
+      return {ape_component};
+
+binary_sensor:
+  - platform: custom
+    lambda: |-
+      return {ape_binary_sensor(ape, 5),
+              ape_binary_sensor(ape, 6), // 14 = A0
+              ape_binary_sensor(ape, 7),
+              ape_binary_sensor(ape, 8),
+              ape_binary_sensor(ape, 9),
+              ape_binary_sensor(ape, 10)
+              };
+
+    binary_sensors:
+      - id: binary_sensor_pin5
+        name: Ingresso 1
+        filters:
+          - invert:
+      - id: binary_sensor_pin6
+        name: Ingresso 2
+        filters:
+          - invert:
+      - id: binary_sensor_pin7
+        name: Ingresso 3
+        filters:
+          - invert:
+      - id: binary_sensor_pin8
+        name: Ingresso 6
+        filters:
+          - invert:
+      - id: binary_sensor_pin9
+        name: Ingresso 5
+        filters:
+          - invert:
+      - id: binary_sensor_pin10
+        name: Ingresso 4
+        filters:
+          - invert:  
+
+    
+output:
+- platform: custom
+  type: binary
+  lambda: |-
+    return {ape_binary_output(ape, 14),
+            ape_binary_output(ape, 15),
+            ape_binary_output(ape, 16),
+            ape_binary_output(ape, 17),
+            ape_binary_output(ape, 3),
+            ape_binary_output(ape, 4)
+           };
+  outputs:
+    - id: output_pin_14
+      inverted: false
+    - id: output_pin_15
+      inverted: false
+    - id: output_pin_16
+      inverted: false
+    - id: output_pin_17
+      inverted: false
+    - id: output_pin_3
+      inverted: false
+    - id: output_pin_4
+      inverted: false
+
+switch:
+  - platform: output
+    name: Rele 1
+    output: output_pin_14
+  - platform: output
+    name: Rele 2
+    output: output_pin_15
+  - platform: output
+    name: Rele 3
+    output: output_pin_16
+  - platform: output
+    name: Rele 4
+    output: output_pin_17
+  - platform: output
+    name: Rele 6
+    output: output_pin_3
+  - platform: output
+    name: Rele 5
+    output: output_pin_4
