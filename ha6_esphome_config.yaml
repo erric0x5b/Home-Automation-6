@@ -25,7 +25,7 @@ wifi:
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "Ha6 Fallback Hotspot"
-    password: "8LT17FgUoy8f"
+    password: "homeautomation6"
 
 captive_portal:
 
